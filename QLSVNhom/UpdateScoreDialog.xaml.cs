@@ -54,7 +54,7 @@ namespace QLSVNhom
             }
             catch (SqlException ex)
             {
-                MessageBox.Show("Cập nhật điểm thất bại, có lỗi xảy ra ở server.");
+                MessageBox.Show("Cập nhật điểm thất bại, có lỗi: " + ex.Message);
             }
             finally
             {

@@ -116,6 +116,9 @@ GO
 EXEC SP_INS_PUBLIC_NHANVIEN @MANV = N'1', @HOTEN = N'Tong Nguyen Minh Khang', @EMAIL = N'test@test.com', @LUONGCB = 100000, @TENDN = '21120263', @MK = 'password'
 GO
 
+EXEC SP_INS_PUBLIC_NHANVIEN @MANV = N'3', @HOTEN = N'Nguyen Van C', @EMAIL = N'test@test.com', @LUONGCB = 100000, @TENDN = 'nguyenvanc', @MK = 'password'
+GO
+
 
 EXEC SP_SEL_PUBLIC_NHANVIEN @TENDN = '21120263', @MK = 'password';
 GO
@@ -243,7 +246,8 @@ CREATE OR ALTER PROCEDURE SP_INS_SINHVIEN_LOP
     @NGAYSINH DATETIME = NULL,
     @DIACHI NVARCHAR(200) = NULL,
 	@TENDNSV NVARCHAR(100),
-	@MK NVARCHAR(100)
+	@MK NVARCHAR(100),
+	@KETQUA NVARCHAR(200) = NULL OUT
 AS
 BEGIN
 	-- Xác thực nhân viên
@@ -254,6 +258,7 @@ BEGIN
     IF @MANV IS NULL
     BEGIN
         PRINT N'Lỗi: Tên đăng nhập hoặc mật khẩu không đúng.';
+		SET @KETQUA = N'Lỗi: Tên đăng nhập hoặc mật khẩu không đúng.';
         RETURN;
     END
 
@@ -261,16 +266,19 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM LOP WHERE MALOP = @MALOP AND MANV = @MANV)
     BEGIN
         PRINT N'Lỗi: Bạn không có quyền sửa thông tin sinh viên của lớp này.';
+		SET @KETQUA = N'Lỗi: Bạn không có quyền sửa thông tin sinh viên của lớp này.';
         RETURN;
     END
 
 	BEGIN TRY
 		INSERT INTO SINHVIEN(MASV, HOTEN, DIACHI, NGAYSINH, MALOP, TENDN, MATKHAU)
 		VALUES (@MASV, @HOTEN, @DIACHI, @NGAYSINH, @MALOP, @TENDNSV, HASHBYTES('SHA1', @MK) )
+		SET @KETQUA = N'Thêm sinh viên với mã sinh viên ' + @MASV + ' thành công.'
 		PRINT N'Thêm sinh viên với mã sinh viên ' + @MASV + ' thành công.'
 	END TRY
 	BEGIN CATCH
 		PRINT N'Lỗi: Có lỗi xảy ra khi thêm sinh viên: ' + ERROR_MESSAGE()
+		SET @KETQUA = N'Lỗi: Có lỗi xảy ra khi thêm sinh viên: '
 	END CATCH
 END
 GO
@@ -292,21 +300,21 @@ BEGIN
     -- Kiểm tra thông tin đăng nhập
     IF @MANV IS NULL
     BEGIN
-        PRINT N'Lỗi: Tên đăng nhập hoặc mật khẩu không đúng.';
+        RAISERROR(N'Lỗi: Tên đăng nhập hoặc mật khẩu không đúng.', 16, 1);
         RETURN;
-    END
+    END;
 
     -- Kiểm tra xem nhân viên có quản lý lớp này không
     IF NOT EXISTS (SELECT 1 FROM LOP WHERE MALOP = @MALOP AND MANV = @MANV)
     BEGIN
-        PRINT N'Lỗi: Bạn không có quyền sửa thông tin sinh viên của lớp này.';
+        RAISERROR(N'Lỗi: Bạn không có quyền sửa thông tin sinh viên của lớp này.',16, 1);
         RETURN;
     END
 
     -- Kiểm tra xem sinh viên có thuộc lớp này không
     IF NOT EXISTS (SELECT 1 FROM SINHVIEN WHERE MASV = @MASV AND MALOP = @MALOP)
     BEGIN
-        PRINT N'Lỗi: Sinh viên này không thuộc lớp này.';
+        RAISERROR(N'Lỗi: Sinh viên này không thuộc lớp này.', 16, 1);
         RETURN;
     END
 
@@ -323,13 +331,12 @@ GO
 -- Stored procedure để xem thông tin sinh viên của một lớp mà nhân viên quản lý
 CREATE OR ALTER PROCEDURE SP_SEL_SINHVIEN_LOP
     @TENDN NVARCHAR(100),
-    @MK NVARCHAR(MAX),
     @MALOP VARCHAR(20)
 AS
 BEGIN
     -- Xác thực nhân viên
     DECLARE @MANV VARCHAR(20);
-    EXEC SP_LOGIN @TENDN = @TENDN, @MK = @MK, @MANV = @MANV OUT;
+    SELECT @MANV = MANV FROM NHANVIEN WHERE TENDN = @TENDN
 
     -- Kiểm tra thông tin đăng nhập
     IF @MANV IS NULL
@@ -338,22 +345,28 @@ BEGIN
         RETURN;
     END
 
-    -- Kiểm tra xem nhân viên có quản lý lớp này không
-    IF NOT EXISTS (SELECT 1 FROM LOP WHERE MALOP = @MALOP AND MANV = @MANV)
-    BEGIN
-        PRINT N'Lỗi: Bạn không có quyền xem thông tin sinh viên của lớp này.';
-        RETURN;
-    END
+    ---- Kiểm tra xem nhân viên có quản lý lớp này không
+    --IF NOT EXISTS (SELECT 1 FROM LOP WHERE MALOP = @MALOP AND MANV = @MANV)
+    --BEGIN
+    --    PRINT N'Lỗi: Bạn không có quyền xem thông tin sinh viên của lớp này.';
+    --    RETURN;
+    --END
 
     -- Lấy thông tin sinh viên của lớp
     SELECT MASV, HOTEN, NGAYSINH, DIACHI, MALOP, TENDN FROM SINHVIEN WHERE MALOP = @MALOP;
 END
 GO
 
+EXEC SP_SEL_SINHVIEN_LOP @TENDN = '21120263', @MALOP = '22CTT1'
+GO
+
 EXEC SP_INS_SINHVIEN_LOP @TENDN = '21120263', @MALOP = '22CTT1', @MASV = '22120000', @HOTEN = N'Tên thử', @NGAYSINH = N'2004/01/01', @DIACHI = N'Test', @TENDNSV = '22120000', @MK = 'password'
 GO
 
 EXEC SP_INS_SINHVIEN_LOP @TENDN = '21120263', @MALOP = '22CTT1', @MASV = '22120002', @HOTEN = N'Sinh viên 3', @NGAYSINH = N'2004/01/02', @DIACHI = N'Địa chỉ 2', @TENDNSV = '22120002', @MK = 'password'
+GO
+
+EXEC SP_INS_SINHVIEN_LOP @TENDN = '21120263', @MALOP = '22CTT1', @MASV = '22120003', @HOTEN = N'Nguyễn Văn A', @NGAYSINH = N'2004/01/03', @DIACHI = N'Phường A, Quận B, TP C', @TENDNSV = '22120003', @MK = 'password'
 GO
 
 -- Stored procedure nhập bảng điểm của sinh viên (điểm thi được mã hóa)
@@ -372,22 +385,29 @@ BEGIN
     -- Kiểm tra thông tin đăng nhập
     IF @MANV IS NULL
     BEGIN
-        PRINT N'Lỗi: Tên đăng nhập không đúng.';
+        RAISERROR(N'Lỗi: Tên đăng nhập không đúng.', 16, 1);
 		CLOSE MASTER KEY
         RETURN;
     END
 
+	-- Kiểm tra nhân viên với tên đăng nhập TENDN có quản lý lớp hay không
+	IF NOT EXISTS(SELECT * FROM (NHANVIEN JOIN LOP ON NHANVIEN.MANV = LOP.MANV) JOIN SINHVIEN ON LOP.MALOP = SINHVIEN.MALOP
+	WHERE SINHVIEN.MASV = @MASV AND NHANVIEN.TENDN = @TENDN)
+	BEGIN
+		RAISERROR(N'Bạn không có quyền sửa điểm cho sinh viên với mã sinh viên %s do sinh viên này thuộc lớp bạn không quản lý.', 16, 1, @MASV);
+	END
+
     -- Kiểm tra xem sinh viên và học phần có tồn tại không
     IF NOT EXISTS (SELECT 1 FROM SINHVIEN WHERE MASV = @MASV)
     BEGIN
-        PRINT N'Lỗi: Sinh viên không tồn tại.';
+        RAISERROR(N'Lỗi: Sinh viên không tồn tại.', 16, 1);
 		CLOSE MASTER KEY
         RETURN;
     END
 
     IF NOT EXISTS (SELECT 1 FROM HOCPHAN WHERE MAHP = @MAHP)
     BEGIN
-        PRINT N'Lỗi: Học phần không tồn tại.';
+        RAISERROR(N'Lỗi: Học phần không tồn tại.', 16, 1);
 		CLOSE MASTER KEY
         RETURN;
     END
@@ -396,12 +416,62 @@ BEGIN
     DECLARE @DIEMTHI_ENCRYPTED VARBINARY(MAX);
     SET @DIEMTHI_ENCRYPTED = ENCRYPTBYASYMKEY(ASYMKEY_ID(@MANV),CONVERT(VARCHAR, @DIEMTHI));
 
-    -- Nhập điểm vào bảng điểm
-    INSERT INTO BANGDIEM (MASV, MAHP, DIEMTHI)
-    VALUES (@MASV, @MAHP, @DIEMTHI_ENCRYPTED);
+	IF EXISTS(SELECT * FROM BANGDIEM WHERE MASV = @MASV AND MAHP = @MAHP)
+	BEGIN
+		UPDATE BANGDIEM SET DIEMTHI = @DIEMTHI_ENCRYPTED WHERE MASV = @MASV AND MAHP = @MAHP
+	END
+	ELSE
+	BEGIN
+		-- Nhập điểm vào bảng điểm
+		INSERT INTO BANGDIEM (MASV, MAHP, DIEMTHI)
+		VALUES (@MASV, @MAHP, @DIEMTHI_ENCRYPTED);
+	END
 
     PRINT N'Nhập điểm thành công.';
 END
+GO
+
+
+
+CREATE OR ALTER PROCEDURE SP_SEL_SCORE_ENCRYPTED
+    @TENDN NVARCHAR(100),
+    @MK NVARCHAR(MAX),
+    @MAHP VARCHAR(20) = NULL
+AS
+BEGIN
+	DECLARE @MASONV VARCHAR(20);
+	EXEC SP_LOGIN @TENDN, @MK, @MANV = @MASONV OUT
+
+	IF @MASONV IS NULL
+	BEGIN
+		PRINT N'Ten dang nhap hoac mat khau khong dung.'
+		RETURN;
+	END
+
+	OPEN MASTER KEY DECRYPTION BY PASSWORD = '21120263';
+
+	DECLARE @PUBKEY VARCHAR(20);
+	
+	SELECT TOP 1 @PUBKEY = PUBKEY FROM NHANVIEN WHERE TENDN = @TENDN
+	IF @MAHP IS NULL
+	BEGIN
+		SELECT DISTINCT MAHP, SINHVIEN.MASV, SINHVIEN.MALOP, HOTEN AS TENSV, 
+		CONVERT(VARCHAR, DECRYPTBYASYMKEY(ASYMKEY_ID(@PUBKEY), DIEMTHI, @MK)) AS DIEMSO
+		FROM (BANGDIEM LEFT JOIN SINHVIEN ON BANGDIEM.MASV = SINHVIEN.MASV), LOP 
+		WHERE SINHVIEN.MALOP IN (SELECT MALOP FROM LOP WHERE MANV = @MASONV)
+	END
+	ELSE
+	BEGIN
+		SELECT DISTINCT MAHP, SINHVIEN.MASV, SINHVIEN.MALOP, HOTEN AS TENSV, 
+		CONVERT(VARCHAR, DECRYPTBYASYMKEY(ASYMKEY_ID(@PUBKEY), DIEMTHI, @MK)) AS DIEMSO 
+		FROM (BANGDIEM LEFT JOIN SINHVIEN ON BANGDIEM.MASV = SINHVIEN.MASV), LOP 
+		WHERE SINHVIEN.MALOP IN (SELECT MALOP FROM LOP WHERE MANV = @MASONV) AND MAHP = @MAHP
+	END
+	CLOSE MASTER KEY
+END
+GO
+
+EXEC SP_SEL_SCORE_ENCRYPTED @TENDN = '21120263', @MK = 'password', @MAHP = N'CSC1'
 GO
 
 -- Stored procedure để xóa lớp học
@@ -500,7 +570,7 @@ EXEC SP_SEL_HOCPHAN
 EXEC SP_INS_HOCPHAN @MAHP = N'CSC3', @TENHP = N'Bảo mật cơ sở dữ liệu', @SOTC = 4
 EXEC SP_SEL_HOCPHAN
 
-EXEC SP_INS_SCORE_ENCRYPTED @TENDN = '21120263', @MASV = '22120001', @MAHP = 'CSC1', @DIEMTHI = 7.8
+EXEC SP_INS_SCORE_ENCRYPTED @TENDN = '21120263', @MASV = '22120001', @MAHP = 'CSC1', @DIEMTHI = 8
 GO
 EXEC SP_INS_SCORE_ENCRYPTED @TENDN = '21120263', @MASV = '22120001', @MAHP = 'CSC2', @DIEMTHI = 8.5
 GO

@@ -23,6 +23,7 @@ namespace QLSVNhom
         public string TENDN { get; private set; }
         public string MANV { get; private set; }
         private DataTable _scores, _classes, _students, _courses;
+        private bool _isManagingClass;
         private string _user;
         private string _pwd;
 
@@ -127,6 +128,7 @@ namespace QLSVNhom
             else
             {
                 InitScoreGrid();
+                MessageBox.Show("Nhập điểm thành công.");
             }
         }
 
@@ -182,6 +184,9 @@ namespace QLSVNhom
             if (dataGridClasses.SelectedItem is DataRowView drv)
             {
                 string malop = drv["MALOP"].ToString();
+                /* _isManagingClass = ( drv.Row.Table.Columns.Contains("DANGQL") && drv["DANGQL"] != null
+                                        && bool.Parse(drv["DANGQL"].ToString())) ? true : false; */
+
                 _students = ExecSP("SP_SEL_SINHVIEN_LOP",
                     new SqlParameter("@TENDN", _user),
                     new SqlParameter("@MALOP", malop));
@@ -205,13 +210,20 @@ namespace QLSVNhom
             // Dòng này là để lưu lại chỉnh sửa của người dùng trên dòng thông tin sinh viên trước khi thực hiện cập nhật trên CSDL
             dataGridStudents.CommitEdit(DataGridEditingUnit.Row, true);
             var drv = (DataRowView)((Button)sender).DataContext;
-            ExecNonQuery("SP_UPDATE_SINHVIEN_LOP",
-                new SqlParameter("@TENDN", _user),
-                new SqlParameter("@MALOP", drv["MALOP"]),
-                new SqlParameter("@MASV", drv["MASV"]),
-                new SqlParameter("@HOTEN", drv["HOTEN"]),
-                new SqlParameter("@NGAYSINH", drv["NGAYSINH"]),
-                new SqlParameter("@DIACHI", drv["DIACHI"]));
+            try
+            {
+                ExecNonQuery("SP_UPDATE_SINHVIEN_LOP",
+                    new SqlParameter("@TENDN", _user),
+                    new SqlParameter("@MALOP", drv["MALOP"]),
+                    new SqlParameter("@MASV", drv["MASV"]),
+                    new SqlParameter("@HOTEN", drv["HOTEN"]),
+                    new SqlParameter("@NGAYSINH", drv["NGAYSINH"]),
+                    new SqlParameter("@DIACHI", drv["DIACHI"]));
+            }catch(SqlException ex)
+            {
+                MessageBox.Show("Cập nhật sinh viên thất bại, lỗi: " + ex.Message);
+                return;
+            }
             MessageBox.Show("Cập nhật sinh viên thành công.");
         }
 

@@ -42,7 +42,6 @@ namespace QLSVNhom
 
             cn.Open();
             cmd.ExecuteNonQuery();
-            MessageBox.Show("Nhập điểm thành công.");
             DialogResult = true;
         }
     }

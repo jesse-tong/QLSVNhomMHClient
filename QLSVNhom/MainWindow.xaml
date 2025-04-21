@@ -32,9 +32,9 @@
                 <StackPanel>
                     <DataGrid x:Name="dataGridClasses" AutoGenerateColumns="False" CanUserAddRows="False" SelectionChanged="DataGridClasses_SelectionChanged">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="MALOP" Binding="{Binding MALOP}" />
-                            <DataGridTextColumn Header="TENLOP" Binding="{Binding TENLOP}" />
-                            <DataGridTextColumn Header="DANGQL" Binding="{Binding DANGQL}" />
+                            <DataGridTextColumn Header="MALOP" Binding="{Binding MALOP}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="TENLOP" Binding="{Binding TENLOP}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="DANGQL" Binding="{Binding DANGQL}" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <Button Content="Thêm lớp" Click="AddClass_Click" Margin="0,10,0,15" />
@@ -42,14 +42,14 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="MASV" Binding="{Binding MASV}" IsReadOnly="True" />
                             <DataGridTextColumn Header="HOTEN" Binding="{Binding HOTEN}" />
-                            <DataGridTextColumn Header="NGAYSINH" Binding="{Binding NGAYSINH}" />
+                            <DataGridTextColumn Header="NGAYSINH" Binding="{Binding NGAYSINH, StringFormat=\{0:dd\-MM\-yyyy\}}" />
                             <DataGridTextColumn Header="MALOP" Binding="{Binding MALOP}" IsReadOnly="True" />
                             <DataGridTemplateColumn Header="Actions">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
                                             <Button Content="Lưu thông tin sinh viên" Click="SaveStudentEdit_Click" />
-                                            <Button Content="Update Scores" Click="UpdateScores_Click" />
+                                            <Button Content="Cập nhật điểm" Click="UpdateScores_Click" />
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
