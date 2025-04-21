@@ -17,8 +17,8 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
-                                            <Button Content="Cập nhật điểm" Click="SaveScores_Click" />
-                                            <Button Content="Xóa điểm" Click="DeleteScoreRow_Click" />
+                                            <Button Content="Cập nhật điểm" Click="SaveScores_Click" Margin="0,0,10,0"/>
+                                            <Button Content="Xóa điểm" Click="DeleteScoreRow_Click" Margin="0,0,10,0"/>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
@@ -34,6 +34,7 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="MALOP" Binding="{Binding MALOP}" />
                             <DataGridTextColumn Header="TENLOP" Binding="{Binding TENLOP}" />
+                            <DataGridTextColumn Header="DANGQL" Binding="{Binding DANGQL}" />
                         </DataGrid.Columns>
                     </DataGrid>
                     <Button Content="Thêm lớp" Click="AddClass_Click" Margin="0,10,0,15" />
@@ -47,7 +48,7 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
-                                            <Button Content="Save Edit" Click="SaveStudentEdit_Click" />
+                                            <Button Content="Lưu thông tin sinh viên" Click="SaveStudentEdit_Click" />
                                             <Button Content="Update Scores" Click="UpdateScores_Click" />
                                         </StackPanel>
                                     </DataTemplate>

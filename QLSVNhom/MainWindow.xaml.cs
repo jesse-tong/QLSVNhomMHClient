@@ -142,15 +142,7 @@ namespace QLSVNhom
             else{
                 mahp = null;
             }
-            /*
-            string mahp = drv["MAHP"].ToString();
-            double diem = Convert.ToDouble(drv["DIEMSO"]);
-            ExecNonQuery("SP_INS_SCORE_ENCRYPTED",
-                new SqlParameter("@TENDN", _user),
-                new SqlParameter("@MASV", masv),
-                new SqlParameter("@MAHP", mahp),
-                new SqlParameter("@DIEMTHI", diem));
-            MessageBox.Show("Nhập điểm thành công.");*/
+
             var updateScoreDialog = new UpdateScoreDialog(_connString, _user, masv, mahp);
             if (updateScoreDialog.ShowDialog() == true)
             {
@@ -210,6 +202,8 @@ namespace QLSVNhom
 
         private void SaveStudentEdit_Click(object sender, RoutedEventArgs e)
         {
+            // Dòng này là để lưu lại chỉnh sửa của người dùng trên dòng thông tin sinh viên trước khi thực hiện cập nhật trên CSDL
+            dataGridStudents.CommitEdit(DataGridEditingUnit.Row, true);
             var drv = (DataRowView)((Button)sender).DataContext;
             ExecNonQuery("SP_UPDATE_SINHVIEN_LOP",
                 new SqlParameter("@TENDN", _user),
