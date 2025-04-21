@@ -1,0 +1,14 @@
+﻿<Window x:Class="QLSVNhom.LoginDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Login" Height="200" Width="300">
+    <Grid>
+        <StackPanel Margin="10">
+            <TextBlock Text="TENDN:" />
+            <TextBox x:Name="txtTENDN" Margin="0,0,0,10" />
+            <TextBlock Text="MATKHAU:" />
+            <PasswordBox x:Name="txtMATKHAU" Margin="0,0,0,10" />
+            <Button Content="Login" Click="Login_Click" HorizontalAlignment="Right" />
+        </StackPanel>
+    </Grid>
+</Window>

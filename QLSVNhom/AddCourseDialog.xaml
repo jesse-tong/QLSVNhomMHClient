@@ -1,0 +1,16 @@
+﻿<Window x:Class="QLSVNhom.AddCourseDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Add Course" Height="250" Width="300">
+    <Grid>
+        <StackPanel Margin="10">
+            <TextBlock Text="MAHP:" />
+            <TextBox x:Name="txtMAHP" Margin="0,0,0,10" />
+            <TextBlock Text="TENHP:" />
+            <TextBox x:Name="txtTENHP" Margin="0,0,0,10" />
+            <TextBlock Text="SOTC:" />
+            <TextBox x:Name="txtSOTC" Margin="0,0,0,10" />
+            <Button Content="Add" Click="Add_Click" HorizontalAlignment="Right" />
+        </StackPanel>
+    </Grid>
+</Window>

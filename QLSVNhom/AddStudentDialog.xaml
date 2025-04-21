@@ -1,0 +1,24 @@
+﻿<Window x:Class="QLSVNhom.AddStudentDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Add New Score" Height="450" Width="300">
+    <Grid>
+        <StackPanel Margin="10">
+            <TextBlock Text="MALOP:" />
+            <TextBox x:Name="txtMALOP" Margin="0,0,0,10" />
+            <TextBlock Text="MASV:" />
+            <TextBox x:Name="txtSV" Margin="0,0,0,10" />
+            <TextBlock Text="HOTEN:" />
+            <TextBox x:Name="txtHOTEN" Margin="0,0,0,10" />
+            <TextBlock Text="NGAYSINH:" />
+            <DatePicker x:Name="dateNGAYSINH" Margin="0,0,0,10" />
+            <TextBlock Text="DIACHI:" />
+            <TextBox x:Name="txtDIACHI" Margin="0,0,0,10" />
+            <TextBlock Text="TENDN:" />
+            <TextBox x:Name="txtTENDNSV" Margin="0,0,0,10" />
+            <TextBlock Text="MATKHAU:" />
+            <PasswordBox x:Name="txtMATKHAUSV" Margin="0,0,0,10" />
+            <Button Content="Add" Click="Update_Click" HorizontalAlignment="Right" />
+        </StackPanel>
+    </Grid>
+</Window>
