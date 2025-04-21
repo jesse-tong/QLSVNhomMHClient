@@ -14,16 +14,33 @@ using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq.Expressions;
+using System.Globalization;
+
 
 namespace QLSVNhom
 {
+    public class BoolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value;
+
+            // Converting back rarely happens, a lot of the converters will throw an exception
+            //throw new NotImplementedException();
+        }
+    }
     public partial class MainWindow : Window
     {
         private readonly string _connString = "Server=.;Database=QLSVNhom;User Id=21120263;Password=21120263;Trusted_Connection=True;TrustServerCertificate=True;";
         public string TENDN { get; private set; }
         public string MANV { get; private set; }
         private DataTable _scores, _classes, _students, _courses;
-        private bool _isManagingClass;
+        public Visibility isManagingClass = Visibility.Visible;
         private string _user;
         private string _pwd;
 
@@ -184,8 +201,9 @@ namespace QLSVNhom
             if (dataGridClasses.SelectedItem is DataRowView drv)
             {
                 string malop = drv["MALOP"].ToString();
-                /* _isManagingClass = ( drv.Row.Table.Columns.Contains("DANGQL") && drv["DANGQL"] != null
-                                        && bool.Parse(drv["DANGQL"].ToString())) ? true : false; */
+                isManagingClass = ( drv.Row.Table.Columns.Contains("DANGQL") && drv["DANGQL"] != null
+                                    && (drv["DANGQL"].ToString().ToLower().Equals("true") || drv["DANGQL"].ToString().ToLower().Equals("1")) ) 
+                                    ? Visibility.Visible : Visibility.Collapsed; 
 
                 _students = ExecSP("SP_SEL_SINHVIEN_LOP",
                     new SqlParameter("@TENDN", _user),
@@ -284,7 +302,7 @@ namespace QLSVNhom
             var dialog = new AddCourseDialog(_connString);
             if (dialog.ShowDialog() == true)
             {
-                MessageBox.Show("New course added successfully.");
+                MessageBox.Show("Học phần thêm thành công.");
                 LoadCourses();
             }
         }
