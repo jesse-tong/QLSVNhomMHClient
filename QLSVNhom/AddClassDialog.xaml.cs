@@ -37,7 +37,16 @@ namespace QLSVNhom
             cmd.Parameters.AddWithValue("@TENDN",  _tendn);
 
             cn.Open();
-            cmd.ExecuteNonQuery();
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch(SqlException ex)
+            {
+                MessageBox.Show("Có lỗi xảy ra khi thêm lớp: " + ex.Message);
+                DialogResult = false;
+                return;
+            }
             MessageBox.Show("Thêm lớp thành công.");
             DialogResult = true;
         }

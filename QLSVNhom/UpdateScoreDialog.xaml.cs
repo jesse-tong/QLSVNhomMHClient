@@ -41,10 +41,16 @@ namespace QLSVNhom
             {
                 CommandType = CommandType.StoredProcedure
             };
-            cmd.Parameters.AddWithValue("@TENDN",   _tendn);
-            cmd.Parameters.AddWithValue("@MASV",    _masv);
-            cmd.Parameters.AddWithValue("@MAHP", txtMAHP.Text);
-            cmd.Parameters.AddWithValue("@DIEMTHI", double.Parse(txtDIEMSO.Text));
+            try
+            {
+                cmd.Parameters.AddWithValue("@TENDN", _tendn);
+                cmd.Parameters.AddWithValue("@MASV", _masv);
+                cmd.Parameters.AddWithValue("@MAHP", txtMAHP.Text);
+                cmd.Parameters.AddWithValue("@DIEMTHI", double.Parse(txtDIEMSO.Text));
+            }catch (Exception ex)
+            {
+                MessageBox.Show("Điểm thi nhập vào không hợp lệ.");
+            }
 
             cn.Open();
             try

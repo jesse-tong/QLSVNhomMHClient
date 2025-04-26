@@ -35,13 +35,33 @@ namespace QLSVNhom
             {
                 CommandType = CommandType.StoredProcedure
             };
-            cmd.Parameters.AddWithValue("@TENDN",   _tendn);
-            cmd.Parameters.AddWithValue("@MASV",    txtMASV.Text);
-            cmd.Parameters.AddWithValue("@MAHP",    txtMAHP.Text);
-            cmd.Parameters.AddWithValue("@DIEMTHI", double.Parse(txtDIEMSO.Text));
 
-            cn.Open();
-            cmd.ExecuteNonQuery();
+            try
+            {
+                cmd.Parameters.AddWithValue("@TENDN", _tendn);
+                cmd.Parameters.AddWithValue("@MASV", txtMASV.Text);
+                cmd.Parameters.AddWithValue("@MAHP", txtMAHP.Text);
+                cmd.Parameters.AddWithValue("@DIEMTHI", double.Parse(txtDIEMSO.Text));
+            }catch (Exception ex)
+            {
+                MessageBox.Show("Điểm thi, mã sinh viên hoặc mã học phần không hợp lệ. Vui lòng kiểm tra lại. ");
+                DialogResult = false;
+                return;
+            }
+
+            try
+            {
+                cn.Open();
+                cmd.ExecuteNonQuery();
+                cn.Close();
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Có lỗi xảy ra khi thêm điểm: " + ex.Message);
+                DialogResult = false;
+                cn.Close();
+                return;
+            }
             DialogResult = true;
         }
     }

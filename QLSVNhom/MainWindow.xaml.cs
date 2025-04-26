@@ -36,7 +36,7 @@ namespace QLSVNhom
     }
     public partial class MainWindow : Window
     {
-        private readonly string _connString = "Server=.;Database=QLSVNhom;User Id=21120263;Password=21120263;Trusted_Connection=True;TrustServerCertificate=True;";
+        private readonly string _connString = "Server=.;Database=QLSVNhom;User Id=21120263;Password=21120263;TrustServerCertificate=True;";
         public string TENDN { get; private set; }
         public string MANV { get; private set; }
         private DataTable _scores, _classes, _students, _courses;
@@ -113,12 +113,7 @@ namespace QLSVNhom
         #region Scores Tab
         private void InitScoreGrid()
         {
-            /*_scores = new DataTable();
-            _scores.Columns.Add("MAHP", typeof(string));
-            _scores.Columns.Add("MALOP", typeof(string));
-            _scores.Columns.Add("MASV", typeof(string));
-            _scores.Columns.Add("TENSV", typeof(string));
-            _scores.Columns.Add("DIEMSO", typeof(double));*/
+
             _scores = ExecSPMultiDatasetsGetSecondDataset("SP_SEL_SCORE_ENCRYPTED", new SqlParameter("@TENDN", _user), new SqlParameter("@MK", _pwd));
             
             if (_scores == null)
@@ -223,6 +218,46 @@ namespace QLSVNhom
             }
         }
 
+        private void SaveClass_Click(object sender, RoutedEventArgs e)
+        {
+            dataGridClasses.CommitEdit(DataGridEditingUnit.Row, true);
+            var drv = (DataRowView)((Button)sender).DataContext;
+            try
+            {
+                ExecNonQuery("SP_UPDATE_LOP",
+                    new SqlParameter("@MALOP", drv["MALOP"]),
+                    new SqlParameter("@TENLOP", drv["TENLOP"]),
+                    new SqlParameter("@TENDN", _user));
+                MessageBox.Show("Cập nhật thông tin lớp thành công");
+                LoadClasses();
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Có lỗi xảy ra khi cập nhật lớp: " + ex.Message);
+                return;
+            }
+            
+        }
+
+        private void DeleteClass_Click(object sender, RoutedEventArgs e)
+        {
+            var drv = (DataRowView)((Button)sender).DataContext;
+            try
+            {
+                ExecNonQuery("SP_DEL_LOP",
+                    new SqlParameter("@MALOP", drv["MALOP"]),
+                    new SqlParameter("@TENDN", _user));
+                MessageBox.Show("Xóa lớp thành công.");
+
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Có lỗi xảy ra khi xóa lớp: " + ex.Message);
+                return;
+            }
+            LoadClasses();
+        }
+
         private void SaveStudentEdit_Click(object sender, RoutedEventArgs e)
         {
             // Dòng này là để lưu lại chỉnh sửa của người dùng trên dòng thông tin sinh viên trước khi thực hiện cập nhật trên CSDL
@@ -275,9 +310,15 @@ namespace QLSVNhom
         private void UpdateCourse_Click(object sender, RoutedEventArgs e)
         {
             var drv = (DataRowView)((Button)sender).DataContext;
-            ExecNonQuery("SP_UPDATE_HOCPHAN",
-                new SqlParameter("@MAHP", drv["MAHP"]),
-                new SqlParameter("@SOTC", drv["SOTC"]));
+            try
+            {
+                ExecNonQuery("SP_UPDATE_HOCPHAN",
+                    new SqlParameter("@MAHP", drv["MAHP"]),
+                    new SqlParameter("@SOTC", drv["SOTC"]));
+            }catch(SqlException ex)
+            {
+                MessageBox.Show("Có lỗi xảy ra khi cập nhật học phần: " + ex.Message);
+            }
             LoadCourses();
         }
 
@@ -302,7 +343,6 @@ namespace QLSVNhom
             var dialog = new AddCourseDialog(_connString);
             if (dialog.ShowDialog() == true)
             {
-                MessageBox.Show("Học phần thêm thành công.");
                 LoadCourses();
             }
         }

@@ -200,22 +200,48 @@ BEGIN
 	
 	IF @MASONV IS NULL
 	BEGIN
-		PRINT 'Loi: Ten dang nhap hoac mat khau khong dung.';
+		RAISERROR(N'Tên đăng nhập không đúng.', 16, 1);
 		RETURN;
 	END
 
 	BEGIN TRY
 		UPDATE LOP SET TENLOP = @TENLOP WHERE MANV = @MASONV AND MALOP = @MALOP
-		PRINT N'Lop voi ma lop ' + @MALOP + N' da duoc thay doi thanh cong.'
+		PRINT N'Lop voi ma lop ' + @MALOP + N' da duoc sua thanh cong.';
 	END TRY
 	BEGIN CATCH
-		PRINT N'Co loi xay ra khi them lop: ' + ERROR_MESSAGE()
+		RAISERROR(N'Co loi xay ra khi them lop: %s', 16, 1);
+		RETURN
+	END CATCH
+END
+GO
+
+CREATE OR ALTER PROCEDURE SP_DEL_LOP
+@MALOP VARCHAR(20), @TENDN NVARCHAR(100)
+AS
+BEGIN
+	DECLARE @MASONV VARCHAR(20)
+	SELECT @MASONV = MANV FROM NHANVIEN WHERE TENDN = @TENDN
+	
+	IF @MASONV IS NULL
+	BEGIN
+		RAISERROR(N'Tên đăng nhập không đúng.', 16, 1);
+		RETURN;
+	END
+
+	BEGIN TRY
+		DELETE FROM LOP WHERE MANV = @MASONV AND MALOP = @MALOP
+		PRINT N'Lớp với mã lớp ' + @MALOP + N' đã được xóa thành công.';
+	END TRY
+	BEGIN CATCH
+		RAISERROR(N'Không thể xóa lớp do có sinh viên trong lớp.', 16, 1);
+		RETURN
 	END CATCH
 END
 GO
 
 EXEC SP_INS_LOP @MALOP = 'CSC10001', @TENLOP = N'Bao mat CSDL', @TENDN = '21120263';
 GO
+
 
 EXEC SP_UPDATE_LOP @MALOP = 'CSC10001', @TENLOP = N'Bao mat CSDL 2', @TENDN = '21120263';
 GO

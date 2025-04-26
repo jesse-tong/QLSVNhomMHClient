@@ -58,7 +58,7 @@ namespace QLSVNhom
             }
             else
             {
-                MessageBox.Show("Login failed. Please check your credentials.");
+                MessageBox.Show("Đăng nhập thất bại. Vui lòng kiểm tra lại tên đăng nhập và mật khẩu.");
             }
         }
     }

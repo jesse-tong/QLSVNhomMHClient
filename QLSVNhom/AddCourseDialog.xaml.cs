@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using System.Linq.Expressions;
 
 namespace QLSVNhom
 {
@@ -35,7 +36,18 @@ namespace QLSVNhom
             cmd.Parameters.AddWithValue("@SOTC",  int.Parse(txtSOTC.Text));
 
             cn.Open();
-            cmd.ExecuteNonQuery();
+            try
+            {
+                cmd.ExecuteNonQuery();
+                cn.Close();
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Có lỗi xảy ra khi thêm học phần: " +  ex.Message);
+                DialogResult = false;
+                cn.Close();
+                return;
+            }
             MessageBox.Show("Thêm học phần thành công.");
             DialogResult = true;
         }

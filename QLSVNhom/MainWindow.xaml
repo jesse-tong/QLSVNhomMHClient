@@ -33,8 +33,18 @@
                     <DataGrid x:Name="dataGridClasses" AutoGenerateColumns="False" CanUserAddRows="False" SelectionChanged="DataGridClasses_SelectionChanged">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="MALOP" Binding="{Binding MALOP}" IsReadOnly="True"/>
-                            <DataGridTextColumn Header="TENLOP" Binding="{Binding TENLOP}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="TENLOP" Binding="{Binding TENLOP}"/>
                             <DataGridTextColumn Header="DANGQL" Binding="{Binding DANGQL}" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Header="Actions">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Content="Cập nhật thông tin lớp" Click="SaveClass_Click" Margin="0,0,10,0"/>
+                                            <Button Content="Xóa lớp" Click="DeleteClass_Click" Margin="0,0,10,0"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                     <Button Content="Thêm lớp" Click="AddClass_Click" Margin="0,10,0,15" />
@@ -70,8 +80,8 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
-                                            <Button Content="Update Course" Click="UpdateCourse_Click" />
-                                            <Button Content="Delete Course" Click="DeleteCourse_Click" />
+                                            <Button Content="Cập nhật học phần" Click="UpdateCourse_Click" />
+                                            <Button Content="Xóa học phần" Click="DeleteCourse_Click" />
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>

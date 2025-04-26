@@ -54,14 +54,14 @@ namespace QLSVNhom
                 cmd.ExecuteNonQuery();
                 string? KETQUA = ketqua.Value as string;
                 MessageBox.Show(KETQUA);
+                cn.Close();
             }
             catch (SqlException ex)
             {
-                MessageBox.Show("Cập nhật điểm thất bại, có lỗi xảy ra ở server.");
-            }
-            finally
-            {
+                MessageBox.Show("Cập nhật điểm thất bại, có lỗi xảy ra ở server: " + ex.Message);
+                DialogResult = false;
                 cn.Close();
+                return;
             }
             DialogResult = true;
         }
