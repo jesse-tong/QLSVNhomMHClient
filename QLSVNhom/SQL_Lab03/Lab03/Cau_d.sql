@@ -304,7 +304,7 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 		PRINT N'Lỗi: Có lỗi xảy ra khi thêm sinh viên: ' + ERROR_MESSAGE()
-		SET @KETQUA = N'Lỗi: Có lỗi xảy ra khi thêm sinh viên: '
+		SET @KETQUA = N'Lỗi: Có lỗi xảy ra khi thêm sinh viên. Vui lòng kiểm tra lại mã lớp, ngày sinh và mã sinh viên.'
 	END CATCH
 END
 GO
@@ -588,7 +588,7 @@ BEGIN
 END
 GO
 
-
+-- Dữ liệu test
 EXEC SP_INS_HOCPHAN @MAHP = N'CSC1', @TENHP = N'Cơ sở dữ liệu', @SOTC = 4
 EXEC SP_SEL_HOCPHAN
 EXEC SP_INS_HOCPHAN @MAHP = N'CSC2', @TENHP = N'Cơ sở dữ liệu nâng cao', @SOTC = 4

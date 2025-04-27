@@ -1,12 +1,13 @@
 ﻿<Window x:Class="QLSVNhom.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Quản Lý Sinh viên - Nhóm " Height="450" Width="800">
+        Title="Quản Lý Sinh viên - Nhóm 9" Height="600" Width="800">
     <Grid>
         <TabControl>
             <TabItem Header="Điểm số sinh viên">
                 <StackPanel>
-                    <DataGrid x:Name="dataGridScores" AutoGenerateColumns="False" CanUserAddRows="False">
+                    <DataGrid x:Name="dataGridScores" AutoGenerateColumns="False" CanUserAddRows="False" 
+                              ScrollViewer.VerticalScrollBarVisibility="Visible" MaxHeight="450px">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="MAHP" Binding="{Binding MAHP, Mode=OneWay}" />
                             <DataGridTextColumn Header="MALOP" Binding="{Binding MALOP, Mode=OneWay}" />
@@ -30,7 +31,8 @@
             </TabItem>
             <TabItem Header="Lớp">
                 <StackPanel>
-                    <DataGrid x:Name="dataGridClasses" AutoGenerateColumns="False" CanUserAddRows="False" SelectionChanged="DataGridClasses_SelectionChanged">
+                    <DataGrid x:Name="dataGridClasses" AutoGenerateColumns="False" CanUserAddRows="False" SelectionChanged="DataGridClasses_SelectionChanged" 
+                              ScrollViewer.VerticalScrollBarVisibility="Visible" MaxHeight="200px">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="MALOP" Binding="{Binding MALOP}" IsReadOnly="True"/>
                             <DataGridTextColumn Header="TENLOP" Binding="{Binding TENLOP}"/>
@@ -48,11 +50,13 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <Button Content="Thêm lớp" Click="AddClass_Click" Margin="0,10,0,15" />
-                    <DataGrid x:Name="dataGridStudents" AutoGenerateColumns="False" CanUserAddRows="False" Visibility="Collapsed">
+                    <DataGrid x:Name="dataGridStudents" AutoGenerateColumns="False" CanUserAddRows="False" Visibility="Collapsed" 
+                              ScrollViewer.VerticalScrollBarVisibility="Visible" MaxHeight="250px">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="MASV" Binding="{Binding MASV}" IsReadOnly="True" />
                             <DataGridTextColumn Header="HOTEN" Binding="{Binding HOTEN}" />
                             <DataGridTextColumn Header="NGAYSINH" Binding="{Binding NGAYSINH, StringFormat=\{0:dd\-MM\-yyyy\}}" />
+                            <DataGridTextColumn Header="DIACHI" Binding="{Binding DIACHI}" />
                             <DataGridTextColumn Header="MALOP" Binding="{Binding MALOP}" IsReadOnly="True" />
                             <DataGridTemplateColumn Header="Actions">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -71,7 +75,8 @@
             </TabItem>
             <TabItem Header="Học phần">
                 <StackPanel>
-                    <DataGrid x:Name="dataGridCourses" AutoGenerateColumns="False" CanUserAddRows="False">
+                    <DataGrid x:Name="dataGridCourses" AutoGenerateColumns="False" CanUserAddRows="False" 
+                              ScrollViewer.VerticalScrollBarVisibility="Visible" MaxHeight="440px">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="MAHP" Binding="{Binding MAHP}" />
                             <DataGridTextColumn Header="TENHP" Binding="{Binding TENHP}" />
