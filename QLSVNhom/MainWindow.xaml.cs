@@ -140,8 +140,9 @@ namespace QLSVNhom
             }
             else
             {
-                InitScoreGrid();
                 MessageBox.Show("Nhập điểm thành công.");
+                InitScoreGrid();
+                
             }
         }
 

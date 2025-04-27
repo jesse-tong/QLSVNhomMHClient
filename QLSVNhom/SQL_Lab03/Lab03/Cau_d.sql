@@ -421,6 +421,8 @@ BEGIN
 	WHERE SINHVIEN.MASV = @MASV AND NHANVIEN.TENDN = @TENDN)
 	BEGIN
 		RAISERROR(N'Bạn không có quyền sửa điểm cho sinh viên với mã sinh viên %s do sinh viên này thuộc lớp bạn không quản lý.', 16, 1, @MASV);
+		CLOSE MASTER KEY
+		RETURN;
 	END
 
     -- Kiểm tra xem sinh viên và học phần có tồn tại không
