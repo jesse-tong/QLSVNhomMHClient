@@ -246,8 +246,7 @@ namespace QLSVNhom
             try
             {
                 ExecNonQuery("SP_DEL_LOP",
-                    new SqlParameter("@MALOP", drv["MALOP"]),
-                    new SqlParameter("@TENDN", _user));
+                    new SqlParameter("@MALOP", drv["MALOP"]));
                 MessageBox.Show("Xóa lớp thành công.");
 
             }
