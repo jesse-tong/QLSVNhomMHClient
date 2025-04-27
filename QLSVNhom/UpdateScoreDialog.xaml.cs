@@ -31,7 +31,6 @@ namespace QLSVNhom
             _masv       = masv;
             _mahp       = mahp;
             txtMAHP.Text = mahp != null ? mahp : string.Empty;
-            // e.g. txtMASV.Text = _masv;
         }
 
         private void Update_Click(object sender, RoutedEventArgs e)
