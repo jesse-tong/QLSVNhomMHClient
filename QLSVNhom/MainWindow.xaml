@@ -18,7 +18,7 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
-                                            <Button Content="Cập nhật điểm" Click="SaveScores_Click" Margin="0,0,10,0"/>
+                                            <Button Content="Cập nhật điểm" Click="SaveScores_Click" Margin="10,0,10,0"/>
                                             <Button Content="Xóa điểm" Click="DeleteScoreRow_Click" Margin="0,0,10,0"/>
                                         </StackPanel>
                                     </DataTemplate>
@@ -41,7 +41,7 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
-                                            <Button Content="Cập nhật thông tin lớp" Click="SaveClass_Click" Margin="0,0,10,0"/>
+                                            <Button Content="Cập nhật thông tin lớp" Click="SaveClass_Click" Margin="10,0,10,0"/>
                                             <Button Content="Xóa lớp" Click="DeleteClass_Click" Margin="0,0,10,0"/>
                                         </StackPanel>
                                     </DataTemplate>
@@ -85,8 +85,8 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
-                                            <Button Content="Cập nhật học phần" Click="UpdateCourse_Click" />
-                                            <Button Content="Xóa học phần" Click="DeleteCourse_Click" />
+                                            <Button Content="Cập nhật học phần" Click="UpdateCourse_Click" Margin="10,0,10,0"/>
+                                            <Button Content="Xóa học phần" Click="DeleteCourse_Click" Margin="0,0,10,0"/>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
