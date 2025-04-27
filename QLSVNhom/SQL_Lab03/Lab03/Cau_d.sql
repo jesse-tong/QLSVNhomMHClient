@@ -575,7 +575,7 @@ BEGIN
     -- Kiểm tra xem học phần có tồn tại không
     IF NOT EXISTS (SELECT 1 FROM HOCPHAN WHERE MAHP = @MAHP)
     BEGIN
-        PRINT N'Lỗi: Học phần không tồn tại.';
+        RAISERROR(N'Lỗi: Học phần không tồn tại.', 16, 1);
         RETURN;
     END
 

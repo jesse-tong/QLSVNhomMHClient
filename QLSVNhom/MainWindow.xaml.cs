@@ -114,7 +114,8 @@ namespace QLSVNhom
         private void InitScoreGrid()
         {
 
-            _scores = ExecSPMultiDatasetsGetSecondDataset("SP_SEL_SCORE_ENCRYPTED", new SqlParameter("@TENDN", _user), new SqlParameter("@MK", _pwd));
+            _scores = ExecSPMultiDatasetsGetSecondDataset("SP_SEL_SCORE_ENCRYPTED", 
+                new SqlParameter("@TENDN", _user), new SqlParameter("@MK", _pwd));
             
             if (_scores == null)
             {
@@ -309,13 +310,17 @@ namespace QLSVNhom
 
         private void UpdateCourse_Click(object sender, RoutedEventArgs e)
         {
+            dataGridCourses.CommitEdit(DataGridEditingUnit.Row, true);
             var drv = (DataRowView)((Button)sender).DataContext;
             try
             {
                 ExecNonQuery("SP_UPDATE_HOCPHAN",
                     new SqlParameter("@MAHP", drv["MAHP"]),
+                    new SqlParameter("@TENHP", drv["TENHP"]),
                     new SqlParameter("@SOTC", drv["SOTC"]));
-            }catch(SqlException ex)
+                MessageBox.Show("Cập nhật học phần thành công");
+            }
+            catch(SqlException ex)
             {
                 MessageBox.Show("Có lỗi xảy ra khi cập nhật học phần: " + ex.Message);
             }
