@@ -21,6 +21,7 @@ using Microsoft.Data.Sqlite;
 using System.Security.Cryptography;
 using System.Data.SqlTypes;
 using Org.BouncyCastle.Asn1.X509.Qualified;
+using System.Security.Cryptography.X509Certificates;
 
 
 namespace QLSVNhom
@@ -55,6 +56,8 @@ namespace QLSVNhom
 
         public MainWindow()
         {
+            this.SizeToContent = SizeToContent.Height;
+            this.MinHeight = 500;
             _rsaKeyClient = new RSAKeyManager();
 
             var loginDialog = new LoginDialog(_connString, _rsaKeyClient);
@@ -72,9 +75,21 @@ namespace QLSVNhom
                 }
                 catch(SqliteException ex)
                 {
+                    /*
                     (string pubKey, string privKey) = RsaHelper.GenerateRsaKeys();
                     _rsaKeyClient.SaveKeys(MANV, pubKey, privKey);
-                    MessageBox.Show("Lưu khóa thành công.");
+                    var cn = NewConn();
+                    SqlCommand cmd = new SqlCommand("SP_UPDATE_PUBKEY_NHANVIEN", cn) 
+                    { CommandType = CommandType.StoredProcedure };
+                    cmd.Parameters.AddWithValue("@MANV", MANV);
+                    cmd.Parameters.AddWithValue("@PUB", pubKey);
+                    cmd.ExecuteNonQuery();
+
+                    MessageBox.Show("Không tìm thấy private key với mã nhân viên " + MANV + ". Tạo mới cặp khóa và ghi đè public key.");
+                    */
+                    MessageBox.Show("Không tìm thấy private key với mã nhân viên " + MANV + ". Vui lòng đưa privateKeys.db từ thư mục client cũ qua hoặc reset lại CSDL.", "Error");
+                    Application.Current.Shutdown();
+
                 }
             }
             else
