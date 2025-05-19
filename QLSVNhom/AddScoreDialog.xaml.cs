@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.Data.SqlClient;
+using QLSVNhom.Controller.KeyManager;
 
 namespace QLSVNhom
 {
@@ -20,12 +21,14 @@ namespace QLSVNhom
     {
         private readonly string _connString;
         private readonly string _tendn;
+        private readonly RSAServiceProvider _provider;
 
-        public AddScoreDialog(string connString, string tendn)
+        public AddScoreDialog(string connString, string tendn, RSAServiceProvider provider)
         {
             InitializeComponent();
             _connString = connString;
             _tendn      = tendn;
+            _provider = provider;
         }
 
         private void Add_Click(object sender, RoutedEventArgs e)
@@ -41,7 +44,7 @@ namespace QLSVNhom
                 cmd.Parameters.AddWithValue("@TENDN", _tendn);
                 cmd.Parameters.AddWithValue("@MASV", txtMASV.Text);
                 cmd.Parameters.AddWithValue("@MAHP", txtMAHP.Text);
-                cmd.Parameters.AddWithValue("@DIEMTHI", double.Parse(txtDIEMSO.Text));
+                cmd.Parameters.AddWithValue("@DIEMTHI", _provider.Encrypt<double>(double.Parse(txtDIEMSO.Text)));
             }catch (Exception ex)
             {
                 MessageBox.Show("Điểm thi, mã sinh viên hoặc mã học phần không hợp lệ. Vui lòng kiểm tra lại. ");

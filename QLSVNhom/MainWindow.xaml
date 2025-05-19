@@ -4,16 +4,49 @@
         Title="Quản Lý Sinh viên - Nhóm 13" Height="600" Width="800">
     <Grid>
         <TabControl>
+            <TabItem Header="Nhân viên">
+                <StackPanel>
+                    <DataGrid x:Name="dataGridEmployees" AutoGenerateColumns="False" CanUserAddRows="False" 
+                              ScrollViewer.VerticalScrollBarVisibility="Visible" MaxHeight="200px">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="MANV" Binding="{Binding MANV}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="HOTEN" Binding="{Binding HOTEN}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="EMAIL" Binding="{Binding EMAIL}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="LUONG" Binding="{Binding LUONG}" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Header="Actions">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Content="Cập nhật thông tin nhân viên" Click="SaveEmployee_Click" Margin="10,0,10,0"/>
+                                            <!--<Button Content="Xóa nhân viên" Click="DeleteEmployee_Click" Margin="0,0,10,0"/> -->
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Button Content="Thêm nhân viên" Click="AddNewEmployee_Click" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10,20,0,20" Padding="10,5,10,5"/>
+                </StackPanel>
+            </TabItem>
             <TabItem Header="Điểm số sinh viên">
                 <StackPanel>
+                    <DataGrid x:Name="dataGridCoursesScoreTab" AutoGenerateColumns="False" CanUserAddRows="False" 
+          ScrollViewer.VerticalScrollBarVisibility="Visible" MaxHeight="200px" Margin="0,0,0,10" 
+                     SelectionChanged="DataGridCoursesScoreTab_SelectionChanged">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="MAHP" Binding="{Binding MAHP}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="TENHP" Binding="{Binding TENHP}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="SOTC" Binding="{Binding SOTC}" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
                     <DataGrid x:Name="dataGridScores" AutoGenerateColumns="False" CanUserAddRows="False" 
-                              ScrollViewer.VerticalScrollBarVisibility="Visible" MaxHeight="450px">
+                              ScrollViewer.VerticalScrollBarVisibility="Visible" MaxHeight="380px">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="MAHP" Binding="{Binding MAHP, Mode=OneWay}" />
                             <DataGridTextColumn Header="MALOP" Binding="{Binding MALOP, Mode=OneWay}" />
                             <DataGridTextColumn Header="MASV" Binding="{Binding MASV, Mode=OneWay}" />
                             <DataGridTextColumn Header="TENSV" Binding="{Binding TENSV, Mode=OneWay}" />
-                            <DataGridTextColumn Header="DIEMSO" Binding="{Binding DIEMSO, Mode=OneWay}" />
+                            <DataGridTextColumn Header="DIEMTHI" Binding="{Binding DIEMTHI, Mode=OneWay}" />
                             <DataGridTemplateColumn Header="Actions">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>

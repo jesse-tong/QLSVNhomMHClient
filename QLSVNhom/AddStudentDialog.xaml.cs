@@ -33,10 +33,16 @@ namespace QLSVNhom
         private void Update_Click(object sender, RoutedEventArgs e)
         {
             using var cn = new SqlConnection(_connString);
-            using var cmd = new SqlCommand("SP_INS_SINHVIEN_LOP", cn)
+            using var cmd = new SqlCommand("SP_INS_SINHVIEN_LOP_ENCRYPTED", cn)
             {
                 CommandType = CommandType.StoredProcedure
             };
+            byte[] mkbam;
+            // Băm mật khẩu bằng SHA1
+            using (var sha1 = System.Security.Cryptography.SHA1.Create())
+            {
+                mkbam = sha1.ComputeHash(Encoding.UTF8.GetBytes(txtMATKHAUSV.Password));
+            }
             cmd.Parameters.AddWithValue("@TENDN", _tendn);
             cmd.Parameters.AddWithValue("@MALOP", txtMALOP.Text);
             cmd.Parameters.AddWithValue("@MASV", txtSV.Text);
@@ -44,7 +50,7 @@ namespace QLSVNhom
             cmd.Parameters.AddWithValue("@DIACHI", txtDIACHI.Text);
             cmd.Parameters.AddWithValue("@TENDNSV", txtTENDNSV.Text);
             cmd.Parameters.AddWithValue("@NGAYSINH", dateNGAYSINH.SelectedDate != null ? dateNGAYSINH.SelectedDate : null);
-            cmd.Parameters.AddWithValue("@MK", txtMATKHAUSV.Password);
+            cmd.Parameters.AddWithValue("@MK", mkbam);
             var ketqua = new SqlParameter("@KETQUA", SqlDbType.NVarChar, 200) { Direction = ParameterDirection.Output };
             cmd.Parameters.Add(ketqua);
 

@@ -11,15 +11,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="SQL_Lab03\**" />
+    <EmbeddedResource Remove="SQL_Lab03\**" />
+    <None Remove="SQL_Lab03\**" />
+    <Page Remove="SQL_Lab03\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="IAccountManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="qlsvnhom.ico" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="SQL_Lab03\" />
+    <Compile Update="RegisterDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
 </Project>

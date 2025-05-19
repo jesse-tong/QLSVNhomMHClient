@@ -1,0 +1,26 @@
+﻿<Window x:Class="QLSVNhom.RegisterDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QLSVNhom"
+        mc:Ignorable="d"
+        Title="Đăng ký" Height="340" Width="300">
+    <Grid>
+        <StackPanel Margin="10">
+            <TextBlock Text="MANV:" />
+            <TextBox x:Name="txtMANV" Margin="0,0,0,10" />
+            <TextBlock Text="HOTEN:" />
+            <TextBox x:Name="txtHOTEN" Margin="0,0,0,10" />
+            <TextBlock Text="EMAIL:" />
+            <TextBox x:Name="txtEMAIL" Margin="0,0,0,10" />
+            <TextBlock Text="LUONGCB:" />
+            <TextBox x:Name="txtLUONGCB" Margin="0,0,0,10" />
+            <TextBlock Text="TENDN:" />
+            <TextBox x:Name="txtTENDN" Margin="0,0,0,10" />
+            <TextBlock Text="MATKHAU:" />
+            <PasswordBox x:Name="txtMATKHAU" Margin="0,0,0,10" />
+            <Button Content="Đăng ký" Click="Add_Click" HorizontalAlignment="Right" />
+        </StackPanel>
+    </Grid>
+</Window>

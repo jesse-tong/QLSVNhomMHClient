@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using QLSVNhom.Controller.KeyManager;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -22,14 +23,16 @@ namespace QLSVNhom
         private readonly string _tendn;
         private readonly string _masv;
         private readonly string? _mahp;
+        private readonly RSAServiceProvider _provider;
 
-        public UpdateScoreDialog(string connString, string tendn, string masv, string? mahp = null)
+        public UpdateScoreDialog(string connString, RSAServiceProvider provider, string tendn, string masv, string? mahp = null)
         {
             InitializeComponent();
             _connString = connString;
             _tendn      = tendn;
             _masv       = masv;
             _mahp       = mahp;
+            _provider   = provider;
             txtMAHP.Text = mahp != null ? mahp : string.Empty;
         }
 
@@ -45,7 +48,7 @@ namespace QLSVNhom
                 cmd.Parameters.AddWithValue("@TENDN", _tendn);
                 cmd.Parameters.AddWithValue("@MASV", _masv);
                 cmd.Parameters.AddWithValue("@MAHP", txtMAHP.Text);
-                cmd.Parameters.AddWithValue("@DIEMTHI", double.Parse(txtDIEMSO.Text));
+                cmd.Parameters.AddWithValue("@DIEMTHI", _provider.Encrypt<double>(double.Parse(txtDIEMSO.Text)));
             }catch (Exception ex)
             {
                 MessageBox.Show("Điểm thi nhập vào không hợp lệ.");

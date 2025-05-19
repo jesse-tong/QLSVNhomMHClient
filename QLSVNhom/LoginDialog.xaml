@@ -8,7 +8,10 @@
             <TextBox x:Name="txtTENDN" Margin="0,0,0,10" />
             <TextBlock Text="MATKHAU:" />
             <PasswordBox x:Name="txtMATKHAU" Margin="0,0,0,10" />
-            <Button Content="Đăng nhập" Click="Login_Click" HorizontalAlignment="Right" />
+            <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Button Content="Đăng ký tài khoản nhân viên" Click="Register_Click" HorizontalAlignment="Left" Margin="0,0,0,0"/>
+                <Button Content="Đăng nhập" Click="Login_Click" HorizontalAlignment="Right" />
+            </DockPanel>
         </StackPanel>
     </Grid>
 </Window>

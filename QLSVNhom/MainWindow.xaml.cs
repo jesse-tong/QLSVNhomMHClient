@@ -16,6 +16,12 @@ using System.Diagnostics.Eventing.Reader;
 using System.Linq.Expressions;
 using System.Globalization;
 
+using QLSVNhom.Controller.KeyManager;
+using Microsoft.Data.Sqlite;
+using System.Security.Cryptography;
+using System.Data.SqlTypes;
+using Org.BouncyCastle.Asn1.X509.Qualified;
+
 
 namespace QLSVNhom
 {
@@ -29,9 +35,6 @@ namespace QLSVNhom
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return value;
-
-            // Converting back rarely happens, a lot of the converters will throw an exception
-            //throw new NotImplementedException();
         }
     }
     public partial class MainWindow : Window
@@ -39,20 +42,40 @@ namespace QLSVNhom
         private readonly string _connString = "Server=.;Database=QLSVNhom;User Id=21120263;Password=21120263;TrustServerCertificate=True;";
         public string TENDN { get; private set; }
         public string MANV { get; private set; }
-        private DataTable _scores, _classes, _students, _courses;
+        public string PUBKEY { get; private set; }
+        private DataTable _scores, _classes, _students, _courses, _employees;
         public Visibility isManagingClass = Visibility.Visible;
+
+        public RSAKeyManager _rsaKeyClient;
+        public RSAServiceProvider _rsaServiceProvider;
+
+        private string? _mahp = null;
         private string _user;
         private string _pwd;
 
         public MainWindow()
         {
-            var loginDialog = new LoginDialog(_connString);
+            _rsaKeyClient = new RSAKeyManager();
+
+            var loginDialog = new LoginDialog(_connString, _rsaKeyClient);
             if (loginDialog.ShowDialog() == true)
             {
                 TENDN = loginDialog.TENDN;
                 MANV = loginDialog.MANV;
+                PUBKEY = loginDialog.PUBKEY;
                 _user = loginDialog.TENDN;
                 _pwd = loginDialog.MATKHAU;
+
+                try
+                {
+                    _rsaServiceProvider = _rsaKeyClient.getKeyProvider(MANV, PUBKEY);
+                }
+                catch(SqliteException ex)
+                {
+                    (string pubKey, string privKey) = RsaHelper.GenerateRsaKeys();
+                    _rsaKeyClient.SaveKeys(MANV, pubKey, privKey);
+                    MessageBox.Show("Lưu khóa thành công.");
+                }
             }
             else
             {
@@ -61,9 +84,10 @@ namespace QLSVNhom
             }
 
             InitializeComponent();
+            LoadEmployees();
             LoadCourses();
             LoadClasses();
-            InitScoreGrid();
+            InitScoreGrid(_mahp);
         }
 
         #region Helpers
@@ -108,20 +132,158 @@ namespace QLSVNhom
             cn.Open();
             cmd.ExecuteNonQuery();
         }
+
+        private DataTable DecryptDataTable(DataTable dataTable, string columnName, int convertToNumber = 0)
+        {
+            // Copy the data table to a new one
+            DataTable dt = new DataTable();
+            if (convertToNumber == 1)
+            {
+                dt.Columns.Add(columnName, typeof(int));
+            }else if (convertToNumber == 2)
+            {
+                dt.Columns.Add(columnName, typeof(float));
+            }else
+            {
+                dt.Columns.Add(columnName, typeof(string));
+            }
+            
+            for (int i = 0; i < dataTable.Rows.Count; i++)
+            {
+                var row = dataTable.Rows[i];
+                byte[] encryptedData;
+
+                if (row[columnName].GetType() == typeof(SqlBytes))
+                {
+                    encryptedData = ((SqlBytes)row[columnName]).Value;
+                }
+                else if (row[columnName].GetType() == typeof(SqlBinary))
+                {
+                    encryptedData = ((SqlBinary)row[columnName]).Value;
+                }
+                else if (row[columnName].GetType() == typeof(string))
+                {
+                    encryptedData = Convert.FromBase64String((string)row[columnName]);
+                }
+                else
+                {
+                    encryptedData = (byte[])row[columnName];
+                }
+
+
+                var decryptedData =  _rsaServiceProvider.Decrypt<string>(encryptedData);
+                if (convertToNumber == 1)
+                {
+                    dt.Rows.Add([int.Parse(decryptedData)]);
+                }
+                else if (convertToNumber == 2)
+                {
+                    dt.Rows.Add([float.Parse(decryptedData)]);
+                }else
+                {
+                    dt.Rows.Add([decryptedData]);
+                }
+            }
+            dataTable.Columns.Remove(columnName);
+            dataTable.Columns.Add(columnName, typeof(string));
+            for (int i = 0; i < dataTable.Rows.Count; i++)
+            {
+                dataTable.Rows[i][columnName] = dt.Rows[i][columnName].ToString();
+            }
+            return dataTable;
+        }
+
+        #endregion
+
+        #region Employees Tab
+        private void LoadEmployees()
+        {
+            using var cn = NewConn();
+            cn.Open();
+            var cmd = new SqlCommand("SP_SEL_PUBLIC_ALL_NHANVIEN", cn);
+            using var reader = cmd.ExecuteReader();
+            _employees = new DataTable();
+            _employees.Columns.Add("LUONG", typeof(int));
+            _employees.Load(reader);
+
+            using var sha1 = System.Security.Cryptography.SHA1.Create();
+            byte[] mkHash = sha1.ComputeHash(Encoding.UTF8.GetBytes(_pwd));
+
+
+            var mkParam = new SqlParameter("@MK", SqlDbType.VarBinary, -1) { Value = mkHash };
+            var employeeDataAndSalary = ExecSP("SP_SEL_PUBLIC_ENCRYPT_NHANVIEN", new SqlParameter("@TENDN", _user), mkParam);
+
+            for (int i = 0; i < _employees.Rows.Count; i++)
+            {
+                var row = _employees.Rows[i];
+                if (row["MANV"].ToString() == employeeDataAndSalary.Rows[0]["MANV"].ToString())
+                {
+                    var salary = employeeDataAndSalary.Rows[0]["LUONG"];
+                    int salaryInt = _rsaServiceProvider.Decrypt<int>((byte[])salary);
+                    _employees.Rows[i]["LUONG"] = salaryInt;
+                }
+                else
+                {
+                    row["LUONG"] = DBNull.Value;
+                }
+            }
+
+            dataGridEmployees.ItemsSource = _employees.DefaultView;
+        }
+
+        private void AddNewEmployee_Click(object sender, RoutedEventArgs e)
+        {
+            var addEmployeeDialog = new AddEmployee(_connString, _rsaKeyClient, _rsaServiceProvider);
+            if (addEmployeeDialog.ShowDialog() == true)
+            {
+                MessageBox.Show("Thêm nhân viên thành công.");
+                LoadEmployees();
+            }
+            else
+            {
+                MessageBox.Show("Thêm nhân viên không thành công.");
+            }
+        }
+
+        private void SaveEmployee_Click(object sender, RoutedEventArgs e)
+        {
+            if (dataGridEmployees.SelectedItem is DataRowView drv)
+            {
+                AddEmployee updateEmployeeDialog = new AddEmployee(_connString, _rsaKeyClient, _rsaServiceProvider, (string?)drv["MANV"]);
+                if (updateEmployeeDialog.ShowDialog() == true)
+                {
+                    MessageBox.Show("Cập nhật nhân viên thành công.");
+                    LoadEmployees();
+                }
+                else
+                {
+                    MessageBox.Show("Cập nhật nhân viên không thành công.");
+                }
+            } 
+        }
         #endregion
 
         #region Scores Tab
-        private void InitScoreGrid()
+        private void InitScoreGrid(string? mahp = null)
         {
-
-            _scores = ExecSPMultiDatasetsGetSecondDataset("SP_SEL_SCORE_ENCRYPTED", 
-                new SqlParameter("@TENDN", _user), new SqlParameter("@MK", _pwd));
+            if (mahp == null)
+            {
+                _scores = ExecSP("SP_SEL_SCORE_ENCRYPTED",
+                    new SqlParameter("@TENDN", _user));
+            } else
+            {
+                _scores = ExecSP("SP_SEL_SCORE_ENCRYPTED",
+                    new SqlParameter("@TENDN", _user),
+                    new SqlParameter("@MAHP", mahp));
+            }
             
             if (_scores == null)
             {
                 MessageBox.Show("Failed to load scores.");
                 return;
             }
+
+            _scores = DecryptDataTable(_scores, "DIEMTHI", 2);
             dataGridScores.ItemsSource = _scores.DefaultView;
             dataGridScores.Columns[0].Header = "Mã học phần";
             dataGridScores.Columns[1].Header = "Mã lớp";
@@ -130,18 +292,27 @@ namespace QLSVNhom
             dataGridScores.Columns[4].Header = "Điểm số";
         }
 
+        private void DataGridCoursesScoreTab_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dataGridCoursesScoreTab.SelectedItem is DataRowView drv)
+            {
+                string? mahp = drv["MAHP"] != null && drv["MAHP"] != DBNull.Value ? drv["MAHP"].ToString(): null;
+                _mahp = mahp;
+                InitScoreGrid(_mahp);
+            }
+        }
         private void AddNewRow_Click(object sender, RoutedEventArgs e)
         {
-            var addScoreDialog = new AddScoreDialog(_connString, _user);
+            var addScoreDialog = new AddScoreDialog(_connString, _user, _rsaServiceProvider);
             if (addScoreDialog.ShowDialog() != true)
             {
                 MessageBox.Show("Nhập điểm không thành công.");
-                InitScoreGrid();
+                InitScoreGrid(_mahp);
             }
             else
             {
                 MessageBox.Show("Nhập điểm thành công.");
-                InitScoreGrid();
+                InitScoreGrid(_mahp);
                 
             }
         }
@@ -159,15 +330,15 @@ namespace QLSVNhom
                 mahp = null;
             }
 
-            var updateScoreDialog = new UpdateScoreDialog(_connString, _user, masv, mahp);
+            var updateScoreDialog = new UpdateScoreDialog(_connString, _rsaServiceProvider, _user, masv, mahp);
             if (updateScoreDialog.ShowDialog() == true)
             {
-                InitScoreGrid();
+                InitScoreGrid(_mahp);
             }
             else
             {
                 MessageBox.Show("Cập nhật điểm không thành công.");
-                InitScoreGrid();
+                InitScoreGrid(_mahp);
             }
         }
 
@@ -176,13 +347,18 @@ namespace QLSVNhom
             var drv = (DataRowView)((Button)sender).DataContext;
             string masv = drv["MASV"].ToString();
             string mahp = drv["MAHP"].ToString();
-            using var cn = NewConn();
-            using var cmd = new SqlCommand(
-                "DELETE FROM BANGDIEM WHERE MASV=@m AND MAHP=@h", cn);
-            cmd.Parameters.AddWithValue("@m", masv);
-            cmd.Parameters.AddWithValue("@h", mahp);
-            cn.Open(); cmd.ExecuteNonQuery();
-            _scores.Rows.Remove(drv.Row);
+            try
+            {
+                using var cmd = ExecSP("SP_DEL_SCORE_ENCRYPTED",
+                new SqlParameter("@TENDN", _user),
+                new SqlParameter("@MASV", masv),
+                new SqlParameter("@MAHP", mahp));
+                _scores.Rows.Remove(drv.Row);
+            }
+            catch(SqlException ex)
+            {
+                MessageBox.Show("Có lỗi xảy ra khi xóa điểm: " + ex.Message);
+            }
         }
         #endregion
 
@@ -215,7 +391,6 @@ namespace QLSVNhom
             var dialog = new AddClassDialog(_connString, _user);
             if (dialog.ShowDialog() == true)
             {
-                MessageBox.Show("New class added successfully.");
                 LoadClasses();
             }
         }
@@ -306,6 +481,14 @@ namespace QLSVNhom
         {
             _courses = ExecSP("SP_SEL_HOCPHAN");
             dataGridCourses.ItemsSource = _courses.DefaultView;
+
+            DataTable coursesScoreTab = _courses.Copy();
+            DataRow selectAllCoursesRow = coursesScoreTab.NewRow();
+            selectAllCoursesRow["MAHP"] = DBNull.Value;
+            selectAllCoursesRow["TENHP"] = "Tất cả học phần";
+            selectAllCoursesRow["SOTC"] = DBNull.Value;
+            coursesScoreTab.Rows.InsertAt(selectAllCoursesRow, 0);
+            dataGridCoursesScoreTab.ItemsSource = coursesScoreTab.DefaultView;
         }
 
         private void UpdateCourse_Click(object sender, RoutedEventArgs e)
