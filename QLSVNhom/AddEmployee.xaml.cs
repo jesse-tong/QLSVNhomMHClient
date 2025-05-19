@@ -26,7 +26,7 @@ namespace QLSVNhom
         private RSAKeyManager _rsaManager;
         private RSAServiceProvider _rsaProvider;
         private string? _manv = null;
-        public AddEmployee(string connString, RSAKeyManager rsaManager, RSAServiceProvider rsaProvider, string? manv = null)
+        public AddEmployee(string connString, RSAKeyManager rsaManager, RSAServiceProvider rsaProvider, string? manv = null, params (string, string?)[] presetValues)
         {
             _connString = connString;
             _rsaManager = rsaManager;
@@ -53,7 +53,26 @@ namespace QLSVNhom
             {
                 txtMANV.Text = string.Empty;
             }
-            
+
+            foreach((string name, string? value) in presetValues)
+            {
+                switch (name)
+                {
+                    case "HOTEN":
+                        txtHOTEN.Text = value == null ? string.Empty : value;
+                        break;
+                    case "EMAIL":
+                        txtEMAIL.Text = value == null ? string.Empty : value;
+                        break;
+                    case "LUONGCB":
+                        txtLUONGCB.Text = value == null ? string.Empty : value;
+                        break;
+                    case "TENDN":
+                        txtTENDN.Text = value == null ? string.Empty : value;
+                        break;
+                }
+            }
+
         }
         private void Add_Click(object sender, RoutedEventArgs e)
         {

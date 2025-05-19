@@ -6,6 +6,7 @@
         <TabControl>
             <TabItem Header="Nhân viên">
                 <StackPanel>
+                    <TextBlock Text="Danh sách nhân viên" FontSize="15" Margin="10,0,0,4" FontWeight="SemiBold"/>
                     <DataGrid x:Name="dataGridEmployees" AutoGenerateColumns="False" CanUserAddRows="False" 
                               ScrollViewer.VerticalScrollBarVisibility="Visible" MaxHeight="200px">
                         <DataGrid.Columns>
@@ -30,6 +31,8 @@
             </TabItem>
             <TabItem Header="Điểm số sinh viên">
                 <StackPanel>
+                    <TextBlock Text="Học phần" FontSize="15" FontWeight="SemiBold" Margin="6,0,0,0"></TextBlock>
+                    <TextBlock Text="Nhấp vào tên học phần để xem điểm từng học phần, hoặc 'Tất cả học phần' để xem tất cả điểm." Margin="4,0,0,0"></TextBlock>
                     <DataGrid x:Name="dataGridCoursesScoreTab" AutoGenerateColumns="False" CanUserAddRows="False" 
           ScrollViewer.VerticalScrollBarVisibility="Visible" MaxHeight="200px" Margin="0,0,0,10" 
                      SelectionChanged="DataGridCoursesScoreTab_SelectionChanged">
@@ -39,6 +42,7 @@
                             <DataGridTextColumn Header="SOTC" Binding="{Binding SOTC}" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
+                    <TextBlock Text="Điểm số" FontSize="15" FontWeight="SemiBold" Margin="6,0,0,0"></TextBlock>
                     <DataGrid x:Name="dataGridScores" AutoGenerateColumns="False" CanUserAddRows="False" 
                               ScrollViewer.VerticalScrollBarVisibility="Visible" MaxHeight="380px">
                         <DataGrid.Columns>
@@ -64,6 +68,7 @@
             </TabItem>
             <TabItem Header="Lớp">
                 <StackPanel>
+                    <TextBlock Text="Lớp" FontSize="15" FontWeight="SemiBold" Margin="6,0,0,0"></TextBlock>
                     <DataGrid x:Name="dataGridClasses" AutoGenerateColumns="False" CanUserAddRows="False" SelectionChanged="DataGridClasses_SelectionChanged" 
                               ScrollViewer.VerticalScrollBarVisibility="Visible" MaxHeight="200px">
                         <DataGrid.Columns>
@@ -82,7 +87,9 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Button Content="Thêm lớp" Click="AddClass_Click" Margin="0,10,0,15" />
+                    <Button Content="Thêm lớp" Click="AddClass_Click" Margin="10,10,0,15" HorizontalAlignment="Left" Padding="10,5" />
+                    <TextBlock Text="Sinh viên" FontSize="15" FontWeight="SemiBold" Margin="6,0,0,0"
+                               ToolTip="Có thể chỉnh sửa từng dòng thông tin sinh viên, chọn 'Cập nhật thông tin sinh viên' để lưu lại."></TextBlock>
                     <DataGrid x:Name="dataGridStudents" AutoGenerateColumns="False" CanUserAddRows="False" Visibility="Collapsed" 
                               ScrollViewer.VerticalScrollBarVisibility="Visible" MaxHeight="250px">
                         <DataGrid.Columns>
@@ -103,11 +110,13 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Button Content="Thêm sinh viên" Click="AddStudent_Click" Margin="0,10,0,15" />
+                    <Button Content="Thêm sinh viên" Click="AddStudent_Click" Margin="10,10,0,15" HorizontalAlignment="Left" Padding="10,5"/>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Học phần">
                 <StackPanel>
+                    <TextBlock Text="Học phần" FontSize="15" FontWeight="SemiBold" Margin="6,0,0,0"
+                     ToolTip="Có thể chỉnh sửa từng dòng học phần trừ mã học phần, chọn 'Cập nhật học phần' để lưu lại."></TextBlock>
                     <DataGrid x:Name="dataGridCourses" AutoGenerateColumns="False" CanUserAddRows="False" 
                               ScrollViewer.VerticalScrollBarVisibility="Visible" MaxHeight="440px">
                         <DataGrid.Columns>
@@ -126,7 +135,7 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Button Content="Thêm học phần" Click="AddCourse_Click" Margin="0,10,0,0" />
+                    <Button Content="Thêm học phần" Click="AddCourse_Click" Margin="10,10,0,0" HorizontalAlignment="Left" Padding="10,5"/>
                 </StackPanel>
             </TabItem>
         </TabControl>

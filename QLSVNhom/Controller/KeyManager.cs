@@ -67,7 +67,7 @@ namespace QLSVNhom.Controller.KeyManager
 
     public class RSAKeyManager
     {
-        private static string dbFilePath = "clientKeys.db";
+        private static string dbFilePath = "privateKeys.db";
         public SqliteConnection? connection;
 
         public RSAKeyManager()

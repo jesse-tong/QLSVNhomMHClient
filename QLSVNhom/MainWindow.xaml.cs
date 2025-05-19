@@ -104,26 +104,6 @@ namespace QLSVNhom
             return dt;
         }
 
-        private DataTable? ExecSPMultiDatasetsGetSecondDataset(string sp, params SqlParameter[] ps)
-        {
-            using var cn = NewConn();
-            using var cmd = new SqlCommand(sp, cn) { CommandType = CommandType.StoredProcedure };
-            if (ps != null) cmd.Parameters.AddRange(ps);
-
-            cn.Open();
-            using var reader = cmd.ExecuteReader();
-
-            // Skip the first result set
-            if (reader.NextResult())
-            {
-                var dt = new DataTable();
-                dt.Load(reader);
-                return dt;
-            }
-
-            return null;
-        }
-
         private void ExecNonQuery(string sp, params SqlParameter[] ps)
         {
             using var cn = NewConn();
@@ -249,7 +229,12 @@ namespace QLSVNhom
         {
             if (dataGridEmployees.SelectedItem is DataRowView drv)
             {
-                AddEmployee updateEmployeeDialog = new AddEmployee(_connString, _rsaKeyClient, _rsaServiceProvider, (string?)drv["MANV"]);
+
+                AddEmployee updateEmployeeDialog = new AddEmployee(_connString, _rsaKeyClient, _rsaServiceProvider, 
+                                                                (string?)drv["MANV"], ("HOTEN", (string?)drv["HOTEN"]), 
+                                                                ("EMAIL", (string?)drv["EMAIL"]), ("LUONGCB", (string?)drv["LUONG"]?.ToString()),
+                                                                ("TENDN", (string?)drv["TENDN"])
+                                                                );
                 if (updateEmployeeDialog.ShowDialog() == true)
                 {
                     MessageBox.Show("Cập nhật nhân viên thành công.");
